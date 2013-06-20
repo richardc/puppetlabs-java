@@ -51,7 +51,6 @@ describe 'java', :type => :class do
     let(:params) { { 'distribution' => 'sun-jre', } }
     it { should contain_package('java').with_name('sun-java6-jre') }
     it { should contain_exec('update-java-alternatives').with_command('update-java-alternatives --set java-6-sun --jre') }
-  end
     it { should contain_file('/tmp/test').with_content('Using package: sun-java6-jre, alterntative java-6-sun, alt_path /usr/lib/jvm/java-6-sun/jre/bin/java') }
   end
 end
