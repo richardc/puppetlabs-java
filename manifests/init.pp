@@ -21,7 +21,9 @@
 #  [*java_alternative*]
 #    The name of the java alternative to use on Debian systems.
 #    "update-java-alternatives -l" will show which choices are available.
-#    If you specify a particular package, you will also want to
+#    If you specify a particular package, you will almost always also
+#    want to specify which java_alternative to choose. If you set
+#    this, you also need to set the path below.
 #
 #  [*java_alternative_path*]
 #    The path to the "java" command on Debian systems. Since the
@@ -65,16 +67,30 @@ class java(
     undef   => $default_package_name,
   }
 
+  ## If $java_alternative is set, use that.
+  ## Elsif the DEFAULT package is being used, then use $default_alternative.
+  ## Else undef
   $use_java_alternative = $java_alternative ? {
     default => $java_alternative,
-    undef   => $default_alternative,
+    undef   => $package ? {
+      $default_package_name => $default_alternative,
+      default               => undef,
+    }
   }
 
+  ## Same logic as $java_alternative above.
   $use_java_alternative_path = $java_alternative_path ? {
     default => $java_alternative_path,
-    undef   => $default_alternative_path,
+    undef   => $package ? {
+      $default_package_name => $default_alternative_path,
+      default               => undef,
+    }
   }
 
+  notice ("Using package: ${use_java_package_name}, alterntative ${use_java_alternative}, alt_path ${use_java_alternative_path}")
+  file {"/tmp/test":
+    content => "Using package: ${use_java_package_name}, alterntative ${use_java_alternative}, alt_path ${use_java_alternative_path}"
+    }
   anchor { 'java::begin:': }
   ->
   package { 'java':
